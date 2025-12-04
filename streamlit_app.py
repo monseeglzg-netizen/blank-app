@@ -11,4 +11,8 @@ st.write("""
 Esta aplicación te permite predecir la temperatura mensual estimada
 para diversas ciudades de México usando datos históricos.
 """)
+# -------------------------------------------------------
+# CARGAR ARCHIVO CSV
+# -------------------------------------------------------
+csv_path = "AmericaTemperaturesByCity.csv"
 
