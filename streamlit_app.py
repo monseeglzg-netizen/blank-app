@@ -50,39 +50,29 @@ temp_col = st.sidebar.selectbox(
 
 st.write(f"**Usando columnas:** ciudad = `{city_col}`, periodo = `{time_col}`, temperatura = `{temp_col}`")
 
+# Aseguramos que temperatura sea numérica (por si viene como texto)
+df[temp_col] = pd.to_numeric(df[temp_col], errors="coerce")
+
 # ---------------------------------------------------------
 # CONTROLES DE PREDICCIÓN
 # ---------------------------------------------------------
 st.sidebar.header("Parámetros de predicción")
 
-# Lista de ciudades
 ciudades = sorted(df[city_col].dropna().unique())
 ciudad_sel = st.sidebar.selectbox("Selecciona una ciudad:", ciudades)
 
-# Lista de periodos (pueden ser meses, fechas, etc.)
 periodos = sorted(df[time_col].dropna().unique())
 periodo_sel = st.sidebar.selectbox("Selecciona el mes / periodo:", periodos)
 
 # ---------------------------------------------------------
-# CÁLCULO DE LA "PREDICCIÓN" (PROMEDIO HISTÓRICO)
+# CÁLCULO DE LA PREDICCIÓN
+# (filtramos directamente por ciudad y periodo)
 # ---------------------------------------------------------
-# Filtrar por ciudad
-df_ciudad = df[df[city_col] == ciudad_sel].copy()
+filtro = (df[city_col] == ciudad_sel) & (df[time_col] == periodo_sel)
+subset = df[filtro].copy()
 
-# Agrupar por periodo y calcular promedio histórico de temperatura
-promedios_periodo = (
-    df_ciudad
-    .groupby(time_col)[temp_col]
-    .mean()
-    .reset_index()
-    .sort_values(time_col)
-)
-
-# Buscar el valor estimado para el periodo elegido
-fila_per = promedios_periodo[promedios_periodo[time_col] == periodo_sel]
-
-if not fila_per.empty:
-    temp_estimada = float(fila_per[temp_col].values[0])
+if not subset.empty:
+    temp_estimada = subset[temp_col].mean()
 else:
     temp_estimada = None
 
@@ -91,7 +81,7 @@ else:
 # ---------------------------------------------------------
 st.subheader("Predicción de temperatura")
 
-if temp_estimada is not None:
+if temp_estimada is not None and pd.notna(temp_estimada):
     st.metric(
         label=f"Temperatura estimada en {ciudad_sel} para {periodo_sel}",
         value=f"{temp_estimada:.2f} °C"
@@ -109,8 +99,18 @@ registrada para esa ciudad en el periodo seleccionado.
 
 # ---------------------------------------------------------
 # GRÁFICA DE EVOLUCIÓN DE TEMPERATURA POR PERIODO
+# (promedio por periodo para la ciudad seleccionada)
 # ---------------------------------------------------------
 st.subheader(f"Evolución histórica promedio por periodo en {ciudad_sel}")
+
+df_ciudad = df[df[city_col] == ciudad_sel].copy()
+promedios_periodo = (
+    df_ciudad
+    .groupby(time_col)[temp_col]
+    .mean()
+    .reset_index()
+    .sort_values(time_col)
+)
 
 chart = (
     alt.Chart(promedios_periodo)
