@@ -15,5 +15,9 @@ para diversas ciudades de México usando datos históricos.
 # CARGAR ARCHIVO CSV
 # -------------------------------------------------------
 csv_path = "AmericaTemperaturesByCity.csv"
-df = pd.read_csv(csv_path)
+# -------------------------------------------------------
+# FILTRAR SOLO MÉXICO
+# -------------------------------------------------------
+if "country" not in df.columns:
+
 
