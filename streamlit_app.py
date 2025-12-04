@@ -12,9 +12,5 @@ Esta aplicación te permite predecir la temperatura mensual estimada
 para diversas ciudades de México usando datos históricos.
 """)
 csv_path = "AmericaTemperaturesByCity.csv”
-  df = pd.read_csv(csv_path)
-# -------------------------------------------------------
-# FILTRAR SOLO MÉXICO
-# -------------------------------------------------------
-if "country" not in df.columns:
+
 
