@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-
+import altair as alt
 # -------------------------------------------------------
 # CONFIGURACIÓN DE LA APP
 # -------------------------------------------------------
@@ -11,5 +11,6 @@ st.write("""
 Esta aplicación te permite predecir la temperatura mensual estimada
 para diversas ciudades de México usando datos históricos.
 """)
+
 
 
